@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package metadata;
+
+service MetadataService {
+    rpc SaveMetadata (FileMetadata) returns (MetadataResponse);
+    rpc GetAllFiles (Empty) returns (AllFilesResponse);  // New function to get all file details
+}
+
+message Empty {}
+
+message FileMetadata {
+    string filename = 1;
+    string mimetype = 2;
+    int64 size = 3;
+    string fileUrl = 4;
+    string uploadDate = 5;
+}
+
+message MetadataResponse {
+    string message = 1;
+    string id = 2;
+}
+
+message AllFilesResponse {
+    repeated FileMetadata files = 1;  // Returns a list of all stored file details
+}
