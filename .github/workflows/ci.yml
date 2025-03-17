@@ -28,5 +28,5 @@ jobs:
 
       - name: Run Tests (API Gateway)
         run: |
-          cd server/api-gateway
+          cd server/api-gateway/test
           npm test
