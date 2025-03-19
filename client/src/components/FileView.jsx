@@ -13,7 +13,7 @@ const FileView = ({refreshTrigger}) => {
   const [files, setFiles] = useState([]); // Store fetched files
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const filesPerPage = 4; // Adjust how many files per page
+  const filesPerPage = 6; // Adjust how many files per page
 
   // Fetch files from API
   const fetchFiles = async () => {
@@ -22,6 +22,8 @@ const FileView = ({refreshTrigger}) => {
       setError(null);
   
       const response = await axios.get("http://localhost:3000/files");
+
+      console.log(response.data.files)
   
       setFiles(response.data.files || []); // Ensure it's an array
     } catch (err) {
@@ -36,22 +38,25 @@ const FileView = ({refreshTrigger}) => {
     fetchFiles();
   }, [refreshTrigger]);
 
-  // Filter files based on search query
-  const filteredFiles = files.filter((file) => {
-    const fileType = ["image", "video", "audio"].includes(file.mimetype.split("/")[0])
-      ? file.mimetype.split("/")[0]
-      : "document";
-  
-    return (
-      file.filename.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      fileType.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-  });
+// Step 1: Filter files first
+const filteredFiles = files.filter((file) => {
+  const fileType = file.mimetype?.split("/")[0]?.toLowerCase() || "document";
 
-  // Pagination Logic
-  const totalPages = Math.ceil(filteredFiles.length / filesPerPage);
-  const startIndex = (currentPage - 1) * filesPerPage;
-  const paginatedFiles = filteredFiles.slice(startIndex, startIndex + filesPerPage);
+  // Normalize filename (remove underscores, dashes, and lowercase everything)
+  const normalizedFilename = file.filename.replace(/[_-]/g, " ").toLowerCase();
+  const normalizedQuery = searchQuery.toLowerCase();
+
+  return (
+    normalizedFilename.includes(normalizedQuery) ||  // Match filename
+    fileType.includes(normalizedQuery)              // Match file type (image, video, etc.)
+  );
+});
+
+// Step 2: Apply Pagination AFTER filtering
+const totalPages = Math.ceil(filteredFiles.length / filesPerPage);
+const currentPageSafe = Math.min(currentPage, totalPages) || 1; // Ensure valid page number
+const startIndex = (currentPageSafe - 1) * filesPerPage;
+const paginatedFiles = filteredFiles.slice(startIndex, startIndex + filesPerPage);
 
   return (
     <div className="max-w-7xl mx-auto p-6">

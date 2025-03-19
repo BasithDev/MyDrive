@@ -41,6 +41,7 @@ app.get("/files", async (req, res) => {
       console.error("Failed to get files:", error.message);
       return res.status(500).json({ message: "Failed to get files" });
     }
+    console.log(response);
     res.json(response);
   });
 });
