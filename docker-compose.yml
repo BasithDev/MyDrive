@@ -1,0 +1,13 @@
+services:
+  api-gateway:
+    build: ./server/api-gateway
+    ports:
+      - "3000:3000"
+  metadata-service:
+    build: ./server/metadata-service
+    ports:
+      - "50052:50052"
+  upload-service:
+    build: ./server/upload-service
+    ports:
+      - "50051:50051"
